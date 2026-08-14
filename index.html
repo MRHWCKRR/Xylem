@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xylem - Plant Intelligence Platform</title>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- AUTHENTICATION SCREEN -->
+    <div id="login-screen">
+        <div class="brand-header">
+            <h1 id="txt-brand-title">XYLEM</h1>
+            <p id="txt-brand-sub">Enterprise Telemetry & Plant Analytics</p>
+        </div>
+        <form id="loginForm">
+            <div class="input-group">
+                <label id="lbl-username">Email Address</label>
+                <input type="email" id="loginEmail" required placeholder="name@company.com">
+            </div>
+            <div class="input-group">
+                <label id="lbl-password">Password</label>
+                <input type="password" id="loginPassword" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn btn-primary" id="loginBtn">Sign In</button>
+        </form>
+        <div class="divider"><span>OR</span></div>
+        <button class="btn btn-google" id="btnGoogleLogin">Continue with Google</button>
+    </div>
+
+    <!-- MAIN APPLICATION SHELL -->
+    <div id="app-container" style="display: none;">
+        <aside>
+            <div class="aside-top">
+                <div class="logo-area">
+                    XYLEM
+                    <span>MONITOR SYSTEM v3.5</span>
+                </div>
+                <ul class="nav-menu">
+                    <li id="nav-dash" class="nav-item active" data-view="dashboard">Dashboard</li>
+                    <li id="nav-settings" class="nav-item" data-view="settings">Settings</li>
+                </ul>
+
+                <!-- NOTIFICATIONS PANEL -->
+                <div class="alert-bell-wrap">
+                    <div class="alert-bell" id="alertBellToggle">
+                        <span>System Alerts</span>
+                        <span id="alertBellBadge" class="alert-badge">0</span>
+                    </div>
+                    <div id="alertsPanel" class="alerts-panel">
+                        <div class="alerts-panel-header">
+                            <span class="alerts-panel-title">Active Notifications</span>
+                            <button id="btnMarkAllRead" class="btn-text-action">Mark all read</button>
+                        </div>
+                        <div id="alertsList"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item sign-out" id="btnSignout">Sign Out</div>
+        </aside>
+
+        <main id="mainViewContainer">
+            <section id="page-dashboard" class="view-page active-page"></section>
+            <section id="page-settings" class="view-page"></section>
+        </main>
+    </div>
+
+    <!-- EDIT / DETAILS MODAL -->
+    <div class="modal-overlay" id="plantModal">
+        <div class="modal-content">
+            <span class="close-modal" id="btnCloseModal">&times;</span>
+            
+            <!-- Editable Plant Name in Modal -->
+            <div class="modal-header-edit">
+                <label class="input-label-sm">Plant Name</label>
+                <input type="text" id="modalPlantNameInput" class="modal-name-input" placeholder="Enter plant name...">
+            </div>
+            
+            <div class="modal-grid-meta">
+                <div class="meta-box"><label>Status</label><span id="modalHealth">--</span></div>
+                <div class="meta-box"><label>Cluster Position</label><span id="modalCluster">--</span></div>
+                <div class="meta-box"><label>30-Day Avg Moisture</label><span id="modalAvgMoisture">--</span></div>
+                <div class="meta-box"><label>30-Day Avg Temp</label><span id="modalAvgTemp">--</span></div>
+            </div>
+
+            <div class="view-toggle-bar">
+                <button class="toggle-btn active" id="btnSimpleView">Simple View</button>
+                <button class="toggle-btn" id="btnAdvancedView">Advanced View</button>
+            </div>
+
+            <h4 id="graphTitle">Telemetry Feed</h4>
+            <div class="chart-wrapper">
+                <canvas id="modalTelemetryChart"></canvas>
+            </div>
+
+            <div class="ai-summary-box modal-ai-box">
+                <div class="ai-title">Gemini AI Intelligence Analysis</div>
+                <p id="modalAiDeepAnalysis">Processing telemetry datasets...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CREATE NEW PLANT MODAL -->
+    <div class="modal-overlay" id="addPlantModal">
+        <div class="modal-content modal-content-sm">
+            <span class="close-modal" id="btnCloseAddModal">&times;</span>
+            <h2>Add Telemetry Node</h2>
+            <p class="modal-sub">Register a new plant sensor zone to the system grid.</p>
+            
+            <form id="addPlantForm">
+                <div class="input-group">
+                    <label>Plant Name</label>
+                    <input type="text" id="newPlantName" required placeholder="e.g. Snake Plant">
+                </div>
+                <div class="input-group">
+                    <label>Zone / Location</label>
+                    <input type="text" id="newPlantZone" required placeholder="e.g. Zone C - Row 1">
+                </div>
+                <button type="submit" class="btn btn-primary">Add Node</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- LOGOUT DIALOG -->
+    <dialog id="signoutDialog">
+        <h3 id="txt-dialog-title">Confirm Sign Out</h3>
+        <p id="txt-dialog-sub">Are you sure you want to end your active monitoring session?</p>
+        <div class="dialog-buttons">
+            <button class="dialog-btn btn-cancel" id="btnDialogCancel">Cancel</button>
+            <button class="dialog-btn btn-confirm" id="btnDialogConfirm">Sign Out</button>
+        </div>
+    </dialog>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
