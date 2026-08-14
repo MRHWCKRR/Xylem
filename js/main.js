@@ -26,26 +26,33 @@ function initAppEvents() {
         try {
             await loginOrSignUpWithEmail(email, pass);
             showToast("Authenticated successfully.");
+            // Instant refresh to load clean session
+            window.location.reload(); 
         } catch (err) {
             showToast(`Auth error: ${err.message}`);
         }
     };
 
+    // Google Sign-In
     document.getElementById('btnGoogleLogin').onclick = async () => {
         try {
             await loginWithGoogle();
             showToast("Signed in with Google.");
+            // Instant refresh to load clean session
+            window.location.reload(); 
         } catch (err) {
             showToast(`Google Auth failed: ${err.message}`);
         }
     };
 
+    // Sign Out Dialog Controls
     document.getElementById('btnSignout').onclick = () => document.getElementById('signoutDialog').showModal();
     document.getElementById('btnDialogCancel').onclick = () => document.getElementById('signoutDialog').close();
     document.getElementById('btnDialogConfirm').onclick = async () => {
         document.getElementById('signoutDialog').close();
         await logoutUser();
-        showToast("Signed out.");
+        // Instant refresh back to login screen
+        window.location.reload(); 
     };
 
     // View Navigation
