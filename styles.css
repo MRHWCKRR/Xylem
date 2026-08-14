@@ -160,3 +160,107 @@ dialog::backdrop { background: var(--modal-bg); }
 .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 2000; }
 .toast { background: var(--bg-sidebar); color: white; padding: 0.625rem 1rem; border-radius: 6px; font-size: 0.8125rem; opacity: 0; transform: translateY(10px); transition: opacity 0.2s, transform 0.2s; box-shadow: var(--shadow); border: 1px solid var(--border-color); }
 .toast.toast-visible { opacity: 1; transform: translateY(0); }
+
+/* SETTINGS PAGE STYLES */
+.settings-card {
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+    margin-top: 1.5rem;
+    overflow: hidden;
+}
+
+.settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.settings-row:last-child {
+    border-bottom: none;
+}
+
+.settings-info label {
+    display: block;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 2px;
+}
+
+.settings-info span {
+    font-size: 0.8125rem;
+    color: var(--text-sub);
+}
+
+.settings-control select {
+    background: var(--bg-primary);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    outline: none;
+    cursor: pointer;
+}
+
+.action-link {
+    background: none;
+    border: none;
+    color: var(--primary-accent);
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+.action-link:hover {
+    background: var(--bg-primary);
+}
+
+/* TOGGLE SWITCH STYLES */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--border-color);
+    transition: .2s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .2s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--primary-accent);
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}

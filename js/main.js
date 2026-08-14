@@ -1,18 +1,15 @@
-import { renderDashboardView, isPlantHealthy, handleCreatePlant } from './dashboard.js';
+import { renderDashboardView } from './dashboard.js';
 import { renderSettingsView } from './settings.js';
 import { closePlantModal, setGraphView, openPlantModal } from './modal.js';
 import { plantDataset } from './data.js';
-import { subscribeToAuth, loginWithEmail, loginWithGoogle, logoutUser } from './firebase.js';
+import { subscribeToAuth, loginOrSignUpWithEmail, loginWithGoogle, logoutUser } from './firebase.js';
 
-// Track read alert IDs
 let readAlertIds = new Set();
 
 document.addEventListener('DOMContentLoaded', () => {
     initAppEvents();
-    renderDashboardView();
-    renderSettingsView();
 
-    // Firebase Auth Real-Time Observer
+    // Real-time auth observer guarantees session persistence across page reloads
     subscribeToAuth(
         (user) => showAppContainer(user),
         () => showLoginScreen()
@@ -20,14 +17,15 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initAppEvents() {
-    // Auth Actions
+    // Auth Form Submit
     document.getElementById('loginForm').onsubmit = async (e) => {
         e.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const pass = document.getElementById('loginPassword').value;
+
         try {
-            const email = document.getElementById('loginEmail').value;
-            const pass = document.getElementById('loginPassword').value;
-            await loginWithEmail(email, pass);
-            showToast("Signed in successfully.");
+            await loginOrSignUpWithEmail(email, pass);
+            showToast("Authenticated successfully.");
         } catch (err) {
             showToast(`Auth error: ${err.message}`);
         }
@@ -38,7 +36,7 @@ function initAppEvents() {
             await loginWithGoogle();
             showToast("Signed in with Google.");
         } catch (err) {
-            showToast(`Google Sign-In failed: ${err.message}`);
+            showToast(`Google Auth failed: ${err.message}`);
         }
     };
 
@@ -50,30 +48,19 @@ function initAppEvents() {
         showToast("Signed out.");
     };
 
-    // Navigation Switcher
+    // View Navigation
     document.querySelectorAll('.nav-item[data-view]').forEach(item => {
         item.onclick = () => switchPage(item.getAttribute('data-view'));
     });
 
-    // Notifications
+    // Alert Panel & Modals
     document.getElementById('alertBellToggle').onclick = toggleAlertsPanel;
     document.getElementById('btnMarkAllRead').onclick = markAllAlertsRead;
-
-    // Modals
     document.getElementById('btnCloseModal').onclick = closePlantModal;
     document.getElementById('btnSimpleView').onclick = () => setGraphView('simple');
     document.getElementById('btnAdvancedView').onclick = () => setGraphView('advanced');
     
-    // Add Plant Modal Controls
     document.getElementById('btnCloseAddModal').onclick = () => {
-        document.getElementById('addPlantModal').style.display = 'none';
-    };
-    document.getElementById('addPlantForm').onsubmit = (e) => {
-        e.preventDefault();
-        const name = document.getElementById('newPlantName').value;
-        const zone = document.getElementById('newPlantZone').value;
-        handleCreatePlant(name, zone);
-        document.getElementById('addPlantForm').reset();
         document.getElementById('addPlantModal').style.display = 'none';
     };
 }
@@ -82,6 +69,10 @@ function showAppContainer(user) {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app-container').style.display = 'flex';
     document.body.style.alignItems = 'flex-start';
+    
+    // Render views after authentication confirmed
+    renderDashboardView();
+    renderSettingsView();
     checkAlerts();
 }
 
@@ -100,11 +91,10 @@ export function switchPage(targetView) {
     if (page) page.classList.add('active-page');
 }
 
-// NOTIFICATION LOGIC
 export function checkAlerts() {
     const alerts = [];
     plantDataset.forEach(plant => {
-        if (!isPlantHealthy(plant)) {
+        if (plant.liveData.moisture < plant.thresholds.moisture.min) {
             alerts.push({
                 plantId: plant.id, 
                 plantName: plant.name,
@@ -117,8 +107,12 @@ export function checkAlerts() {
     const badge = document.getElementById('alertBellBadge');
     const list = document.getElementById('alertsList');
 
-    badge.innerText = unreadAlerts.length;
-    badge.style.display = unreadAlerts.length > 0 ? 'flex' : 'none';
+    if (badge) {
+        badge.innerText = unreadAlerts.length;
+        badge.style.display = unreadAlerts.length > 0 ? 'flex' : 'none';
+    }
+
+    if (!list) return;
 
     if (alerts.length === 0) {
         list.innerHTML = `<div class="alert-empty">All nodes operational. No alerts.</div>`;
