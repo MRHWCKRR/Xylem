@@ -40,7 +40,9 @@
                     <span>MONITOR SYSTEM v3.5</span>
                 </div>
                 <ul class="nav-menu">
-                    <li id="nav-dash" class="nav-item active" data-view="dashboard">Dashboard</li>
+                    <li id="nav-dash" class="nav-item active" data-view="dashboard">Overview</li>
+                    <li id="nav-plants" class="nav-item" data-view="plants">Plant Grid</li>
+                    <li id="nav-analytics" class="nav-item" data-view="analytics">Analytics</li>
                     <li id="nav-settings" class="nav-item" data-view="settings">Settings</li>
                 </ul>
 
@@ -64,6 +66,8 @@
 
         <main id="mainViewContainer">
             <section id="page-dashboard" class="view-page active-page"></section>
+            <section id="page-plants" class="view-page"></section>
+            <section id="page-analytics" class="view-page"></section>
             <section id="page-settings" class="view-page"></section>
         </main>
     </div>
@@ -73,7 +77,6 @@
         <div class="modal-content">
             <span class="close-modal" id="btnCloseModal">&times;</span>
             
-            <!-- Editable Plant Name in Modal -->
             <div class="modal-header-edit">
                 <label class="input-label-sm">Plant Name</label>
                 <input type="text" id="modalPlantNameInput" class="modal-name-input" placeholder="Enter plant name...">

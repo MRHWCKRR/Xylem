@@ -1,134 +1,114 @@
-import { plantDataset, createNewPlantNode, deletePlantNode } from './data.js';
+import { plantDataset } from './data.js';
 import { openPlantModal } from './modal.js';
-import { showToast, checkAlerts } from './main.js';
+import { switchPage } from './ui.js';
 
 export function renderDashboardView() {
     const page = document.getElementById('page-dashboard');
-    page.innerHTML = `
-        <div class="dashboard-header-wrap">
-            <header>
-                <h1>System Overview</h1>
-                <p>Live telemetry metrics and node status across registered biosphere zones.</p>
-            </header>
-            <button class="btn-add-plant" id="btnOpenAddModal">
-                <span>+</span> Add Plant
-            </button>
-        </div>
-        <div class="plant-grid" id="plantGridContainer"></div>
-    `;
+    const totalPlants = plantDataset.length;
+    let unhealthyCount = 0;
+    let moistureSum = 0;
+    let tempSum = 0;
 
-    document.getElementById('btnOpenAddModal').onclick = () => {
-        document.getElementById('addPlantModal').style.display = 'flex';
-    };
-
-    renderPlantWidgets();
-}
-
-export function isPlantHealthy(plant) {
-    const range = plant.thresholds.moisture;
-    const m = plant.liveData.moisture;
-    return m >= range.min && m <= range.max;
-}
-
-export function renderPlantWidgets() {
-    const container = document.getElementById('plantGridContainer');
-    if (!container) return;
-    container.innerHTML = "";
-
-    plantDataset.forEach(plant => {
-        const healthy = isPlantHealthy(plant);
-        const statusLabel = healthy ? "Healthy" : "Attention Needed";
-        const badgeClass = healthy ? "badge-healthy" : "badge-attention";
-
-        const card = document.createElement('div');
-        card.className = 'plant-card';
-
-        card.innerHTML = `
-            <div class="plant-card-top">
-                <h3 class="plant-card-title">${plant.name}</h3>
-                <div class="card-menu-wrap">
-                    <button class="btn-menu-trigger" data-id="${plant.id}">&vellip;</button>
-                    <div class="card-dropdown" id="dropdown-${plant.id}">
-                        <button class="dropdown-item btn-menu-details" data-id="${plant.id}">View Details</button>
-                        <button class="dropdown-item danger-text btn-menu-delete" data-id="${plant.id}">Delete Plant</button>
-                    </div>
-                </div>
-            </div>
-            <div class="status-row">
-                <span style="font-size: 0.8125rem; color: var(--text-sub);">${plant.clusterPos}</span>
-                <span class="badge ${badgeClass}">${statusLabel}</span>
-            </div>
-            <div class="telemetry-metrics">
-                <div class="metric-item"><span>Moisture</span>${plant.liveData.moisture}%</div>
-                <div class="metric-item"><span>Temp</span>${plant.liveData.temp}°C</div>
-                <div class="metric-item"><span>Light</span>${plant.liveData.light} lx</div>
-            </div>
-            <div class="ai-summary-box">
-                <div class="ai-title">Gemini AI Status</div>
-                <p>${plant.aiSimple}</p>
-            </div>
-            <button class="btn-take-reading" id="btn-read-${plant.id}">Capture Node Telemetry</button>
-        `;
-        container.appendChild(card);
-
-        // Bind Card Actions
-        const menuBtn = card.querySelector('.btn-menu-trigger');
-        const dropdown = card.querySelector(`#dropdown-${plant.id}`);
-
-        menuBtn.onclick = (e) => {
-            e.stopPropagation();
-            document.querySelectorAll('.card-dropdown').forEach(d => d !== dropdown && d.classList.remove('show'));
-            dropdown.classList.toggle('show');
-        };
-
-        card.querySelector('.btn-menu-details').onclick = (e) => {
-            e.stopPropagation();
-            dropdown.classList.remove('show');
-            openPlantModal(plant.id);
-        };
-
-        card.querySelector('.btn-menu-delete').onclick = (e) => {
-            e.stopPropagation();
-            dropdown.classList.remove('show');
-            removePlant(plant.id);
-        };
-
-        card.querySelector(`#btn-read-${plant.id}`).onclick = (e) => {
-            e.stopPropagation();
-            takeNewReading(plant.id);
-        };
+    plantDataset.forEach(p => {
+        if (p.liveData.moisture < p.thresholds.moisture.min || p.liveData.moisture > p.thresholds.moisture.max) {
+            unhealthyCount++;
+        }
+        moistureSum += p.liveData.moisture;
+        tempSum += p.liveData.temp;
     });
 
-    // Close open menus when clicking outside
-    document.onclick = () => document.querySelectorAll('.card-dropdown').forEach(d => d.classList.remove('show'));
-}
+    const avgMoisture = totalPlants > 0 ? Math.round(moistureSum / totalPlants) : 0;
+    const avgTemp = totalPlants > 0 ? (tempSum / totalPlants).toFixed(1) : 0;
+    const systemStatusText = unhealthyCount === 0 ? "All Systems Operational" : `${unhealthyCount} Node(s) Need Attention`;
+    const statusBadgeClass = unhealthyCount === 0 ? "badge-healthy" : "badge-attention";
 
-export function handleCreatePlant(name, zone) {
-    const newPlant = createNewPlantNode(name, zone);
-    renderPlantWidgets();
-    checkAlerts();
-    showToast(`Registered node: ${newPlant.name}`);
-}
+    page.innerHTML = `
+        <header>
+            <h1>System Overview</h1>
+            <p>Real-time telemetry baseline and biosphere grid performance.</p>
+        </header>
 
-export function removePlant(plantId) {
-    const plant = plantDataset.find(p => p.id === plantId);
-    if (!plant) return;
-    deletePlantNode(plantId);
-    renderPlantWidgets();
-    checkAlerts();
-    showToast(`Removed node: ${plant.name}`);
-}
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">Active Nodes</div>
+                <div class="kpi-value">${totalPlants}</div>
+                <div class="kpi-sub">Registered sensor units</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">System Health</div>
+                <div class="kpi-value" style="font-size: 1.25rem; margin-top: 0.5rem;">
+                    <span class="badge ${statusBadgeClass}">${systemStatusText}</span>
+                </div>
+                <div class="kpi-sub">${unhealthyCount} node(s) exceeding threshold</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Avg Moisture</div>
+                <div class="kpi-value">${avgMoisture}%</div>
+                <div class="kpi-sub">Across all biosphere zones</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Avg Temperature</div>
+                <div class="kpi-value">${avgTemp}°C</div>
+                <div class="kpi-sub">Thermal ambient mean</div>
+            </div>
+        </div>
 
-export function takeNewReading(plantId) {
-    const plant = plantDataset.find(p => p.id === plantId);
-    if (!plant) return;
+        <div class="dashboard-sections">
+            <div class="compact-card">
+                <h3>
+                    <span>Live Node Statuses</span>
+                    <button class="btn-table-action" id="btnGoToPlants">Manage Nodes &rarr;</button>
+                </h3>
+                <table class="node-summary-table">
+                    <thead>
+                        <tr>
+                            <th>Plant</th>
+                            <th>Zone</th>
+                            <th>Moisture</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="overviewTableBody"></tbody>
+                </table>
+            </div>
 
-    plant.liveData.moisture = Math.round(Math.min(100, Math.max(0, plant.liveData.moisture + (Math.random() * 8 - 4))));
-    plant.liveData.temp = Math.round((plant.liveData.temp + (Math.random() * 1.6 - 0.8)) * 10) / 10;
-    plant.weeklyMoistureData.shift();
-    plant.weeklyMoistureData.push(plant.liveData.moisture);
+            <div class="compact-card">
+                <h3>Gemini System AI Digest</h3>
+                <div class="ai-summary-box" style="margin-top: 0;">
+                    <div class="ai-title">Autonomous Insight</div>
+                    <p>
+                        ${unhealthyCount > 0 
+                            ? `Alert: ${unhealthyCount} plant(s) require moisture adjustments. Check Zone B row thresholds.` 
+                            : 'All zone sensors reporting standard operating transpiration levels.'}
+                    </p>
+                </div>
+            </div>
+        </div>
+    `;
 
-    renderPlantWidgets();
-    checkAlerts();
-    showToast(`Telemetry updated for ${plant.name}`);
+    const tableBody = document.getElementById('overviewTableBody');
+    tableBody.innerHTML = plantDataset.map(plant => {
+        const healthy = plant.liveData.moisture >= plant.thresholds.moisture.min && plant.liveData.moisture <= plant.thresholds.moisture.max;
+        return `
+            <tr>
+                <td><strong>${plant.name}</strong></td>
+                <td>${plant.clusterPos}</td>
+                <td>${plant.liveData.moisture}%</td>
+                <td><span class="badge ${healthy ? 'badge-healthy' : 'badge-attention'}">${healthy ? 'Healthy' : 'Attention'}</span></td>
+                <td><button class="btn-table-action btn-inspect" data-id="${plant.id}">Inspect</button></td>
+            </tr>
+        `;
+    }).join('');
+
+    document.getElementById('btnGoToPlants').onclick = () => {
+        switchPage('plants');
+    };
+    
+    tableBody.querySelectorAll('.btn-inspect').forEach(btn => {
+        btn.onclick = () => {
+            const id = parseInt(btn.getAttribute('data-id'));
+            openPlantModal(id);
+        };
+    });
 }

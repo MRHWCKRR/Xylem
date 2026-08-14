@@ -1,61 +1,40 @@
-export const i18n = {
-    en: {
-        brandTitle: "XYLEM", brandSub: "Enterprise Telemetry & Plant Analytics",
-        username: "Email Address", password: "Password", loginBtn: "Sign In",
-        setMainTitle: "System Settings", setTheme: "Display Mode", subTheme: "Toggle system dark/light configuration profile",
-        setExport: "Cloud Node Archive", subExport: "Fetch dynamic JSON packet data from platform server",
-        setClear: "Purge Historical Telemetry", subClear: "Clear metrics arrays utilized for analytics graphs",
-        setLang: "Interface Language", subLang: "Configure localized i18n interface variables",
-        diagTitle: "Confirm Sign Out"
-    }
-};
-
 export let plantDataset = [
     {
-        id: 0,
+        id: 1,
         name: "Fiddle Leaf Fig",
-        clusterPos: "Zone A - Row 2",
-        liveData: { moisture: 64, temp: 22.4, light: 4200 },
-        avgMoisture30Days: "61%",
-        avgTemp30Days: "21.8°C",
-        aiSimple: "Optimal cellular hydration levels detected.",
-        aiAdvanced: "Gemini AI: Transpiration rates remain highly optimal. Sunlight cycles match expected growth curves perfectly.",
-        weeklyMoistureData: [58, 60, 62, 65, 64, 63, 64],
-        weeklyTempData: [20.5, 21.0, 21.8, 22.1, 22.4, 22.0, 22.4],
-        thresholds: { moisture: { min: 50, max: 75 }, temp: { min: 18, max: 26 }, light: { min: 3000, max: 6000 } }
+        clusterPos: "Zone A - Bay 1",
+        liveData: { moisture: 42, temp: 21.5, light: 850 },
+        thresholds: { moisture: { min: 35, max: 70 } },
+        weeklyMoistureData: [55, 52, 48, 46, 44, 43, 42],
+        weeklyTempData: [22, 21.8, 21.5, 22.1, 21.9, 21.4, 21.5],
+        aiSimple: "Soil hydration is nominal. No action required."
     },
     {
-        id: 1,
+        id: 2,
         name: "Monstera Deliciosa",
-        clusterPos: "Zone B - Row 1",
-        liveData: { moisture: 38, temp: 24.1, light: 5100 },
-        avgMoisture30Days: "52%",
-        avgTemp30Days: "23.5°C",
-        aiSimple: "Soil moisture is below minimum recommended thresholds.",
-        aiAdvanced: "Gemini AI: Consistent decline in hydration recorded over 48 hours. Irrigation intervention recommended.",
-        weeklyMoistureData: [48, 45, 42, 40, 39, 37, 38],
-        weeklyTempData: [22.1, 22.8, 23.2, 23.9, 24.0, 24.2, 24.1],
-        thresholds: { moisture: { min: 45, max: 70 }, temp: { min: 20, max: 27 }, light: { min: 4000, max: 7000 } }
+        clusterPos: "Zone A - Bay 2",
+        liveData: { moisture: 28, temp: 23.1, light: 1200 },
+        thresholds: { moisture: { min: 40, max: 80 } },
+        weeklyMoistureData: [60, 50, 45, 38, 32, 30, 28],
+        weeklyTempData: [23, 23.2, 22.9, 23.0, 23.5, 23.1, 23.1],
+        aiSimple: "Moisture below critical minimum threshold (40%). Irrigation recommended."
     }
 ];
 
-export function createNewPlantNode(name, zone) {
-    const newId = plantDataset.length > 0 ? Math.max(...plantDataset.map(p => p.id)) + 1 : 0;
-    const newNode = {
+export function createNewPlantNode(name, clusterPos) {
+    const newId = plantDataset.length > 0 ? Math.max(...plantDataset.map(p => p.id)) + 1 : 1;
+    const newPlant = {
         id: newId,
         name: name,
-        clusterPos: zone,
-        liveData: { moisture: 55, temp: 22.0, light: 4500 },
-        avgMoisture30Days: "55%",
-        avgTemp30Days: "22.0°C",
-        aiSimple: "Initial telemetry baseline established.",
-        aiAdvanced: "Gemini AI: Initializing baseline tracking series for newly provisioned hardware node.",
-        weeklyMoistureData: [55, 55, 55, 55, 55, 55, 55],
-        weeklyTempData: [22.0, 22.0, 22.0, 22.0, 22.0, 22.0, 22.0],
-        thresholds: { moisture: { min: 45, max: 75 }, temp: { min: 18, max: 26 }, light: { min: 3000, max: 6000 } }
+        clusterPos: clusterPos || "Zone C - Unassigned",
+        liveData: { moisture: 50, temp: 22.0, light: 900 },
+        thresholds: { moisture: { min: 35, max: 75 } },
+        weeklyMoistureData: [50, 50, 50, 50, 50, 50, 50],
+        weeklyTempData: [22, 22, 22, 22, 22, 22, 22],
+        aiSimple: "Newly initialized sensor node."
     };
-    plantDataset.push(newNode);
-    return newNode;
+    plantDataset.push(newPlant);
+    return newPlant;
 }
 
 export function deletePlantNode(plantId) {

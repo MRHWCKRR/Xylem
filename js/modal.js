@@ -1,98 +1,74 @@
 import { plantDataset } from './data.js';
-import { isPlantHealthy, renderPlantWidgets } from './dashboard.js';
-import { showToast } from './main.js';
 
-let modalState = {
-    currentActivePlant: null,
-    currentGraphView: "simple",
-    modalChartInstance: null
-};
+let activePlantId = null;
+let currentGraphView = 'simple';
+let modalChartInstance = null;
 
 export function openPlantModal(plantId) {
-    modalState.currentActivePlant = plantDataset.find(p => p.id === plantId);
-    modalState.currentGraphView = 'simple';
+    const plant = plantDataset.find(p => p.id === plantId);
+    if (!plant) return;
 
-    const p = modalState.currentActivePlant;
-    const nameInput = document.getElementById('modalPlantNameInput');
-    nameInput.value = p.name;
+    activePlantId = plantId;
+    const modal = document.getElementById('plantModal');
     
-    // Inline edit listener inside modal only
-    nameInput.onchange = (e) => {
-        const val = e.target.value.trim();
-        if (val) {
-            p.name = val;
-            renderPlantWidgets();
-            showToast(`Plant updated: ${p.name}`);
-        }
+    document.getElementById('modalPlantNameInput').value = plant.name;
+    document.getElementById('modalHealth').innerText = plant.liveData.moisture >= plant.thresholds.moisture.min ? "Nominal" : "Action Needed";
+    document.getElementById('modalCluster').innerText = plant.clusterPos;
+    
+    const avgM = Math.round(plant.weeklyMoistureData.reduce((a,b)=>a+b,0)/plant.weeklyMoistureData.length);
+    const avgT = (plant.weeklyTempData.reduce((a,b)=>a+b,0)/plant.weeklyTempData.length).toFixed(1);
+    
+    document.getElementById('modalAvgMoisture').innerText = `${avgM}%`;
+    document.getElementById('modalAvgTemp').innerText = `${avgT}°C`;
+    document.getElementById('modalAiDeepAnalysis').innerText = plant.aiSimple;
+
+    modal.style.display = 'flex';
+    renderModalChart(plant);
+
+    document.getElementById('modalPlantNameInput').onchange = (e) => {
+        plant.name = e.target.value;
     };
-
-    document.getElementById('modalHealth').innerText = isPlantHealthy(p) ? "Healthy" : "Attention Needed";
-    document.getElementById('modalCluster').innerText = p.clusterPos;
-    document.getElementById('modalAvgMoisture').innerText = p.avgMoisture30Days;
-    document.getElementById('modalAvgTemp').innerText = p.avgTemp30Days;
-
-    updateModalGraphView();
-    document.getElementById('plantModal').style.display = 'flex';
 }
 
 export function closePlantModal() {
     document.getElementById('plantModal').style.display = 'none';
-    if (modalState.modalChartInstance) { modalState.modalChartInstance.destroy(); }
 }
 
 export function setGraphView(viewMode) {
-    modalState.currentGraphView = viewMode;
+    currentGraphView = viewMode;
     document.getElementById('btnSimpleView').classList.toggle('active', viewMode === 'simple');
     document.getElementById('btnAdvancedView').classList.toggle('active', viewMode === 'advanced');
-    updateModalGraphView();
-}
-
-export function updateModalGraphView() {
-    const p = modalState.currentActivePlant;
-    if (!p) return;
-
-    if (modalState.currentGraphView === 'simple') {
-        document.getElementById('graphTitle').innerText = "Soil Moisture History (7 Days)";
-        document.getElementById('modalAiDeepAnalysis').innerText = p.aiSimple;
-        renderModalChart([p.weeklyMoistureData], ['Soil Moisture (%)'], ['#0f766e'], false);
-    } else {
-        document.getElementById('graphTitle').innerText = "Correlative Telemetry (Moisture vs Temperature)";
-        document.getElementById('modalAiDeepAnalysis').innerText = p.aiAdvanced;
-        renderModalChart([p.weeklyMoistureData, p.weeklyTempData], ['Soil Moisture (%)', 'Temperature (°C)'], ['#0f766e', '#e11d48'], true);
+    if (activePlantId) {
+        const plant = plantDataset.find(p => p.id === activePlantId);
+        if (plant) renderModalChart(plant);
     }
 }
 
-function renderModalChart(datasetsArray, labelsArray, colorsArray, dualAxis = false) {
+function renderModalChart(plant) {
     const ctx = document.getElementById('modalTelemetryChart').getContext('2d');
-    if (modalState.modalChartInstance) { modalState.modalChartInstance.destroy(); }
+    if (modalChartInstance) modalChartInstance.destroy();
 
-    const timeLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const compiledDatasets = datasetsArray.map((data, idx) => ({
-        label: labelsArray[idx],
-        data: data,
-        borderColor: colorsArray[idx],
-        backgroundColor: 'transparent',
-        borderWidth: 2,
-        tension: 0.2,
-        yAxisID: dualAxis && idx === 1 ? 'y1' : 'y'
-    }));
+    const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-    const optionsConfig = {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: { y: { type: 'linear', display: true, position: 'left' } }
-    };
+    const datasets = [{
+        label: 'Moisture Level (%)',
+        data: plant.weeklyMoistureData,
+        borderColor: '#0f766e',
+        tension: 0.3
+    }];
 
-    if (dualAxis) {
-        optionsConfig.scales.y1 = {
-            type: 'linear', display: true, position: 'right',
-            grid: { drawOnChartArea: false }
-        };
+    if (currentGraphView === 'advanced') {
+        datasets.push({
+            label: 'Temperature (°C)',
+            data: plant.weeklyTempData,
+            borderColor: '#e11d48',
+            tension: 0.3
+        });
     }
 
-    modalState.modalChartInstance = new Chart(ctx, {
+    modalChartInstance = new Chart(ctx, {
         type: 'line',
-        data: { labels: timeLabels, datasets: compiledDatasets },
-        options: optionsConfig
+        data: { labels, datasets },
+        options: { responsive: true, maintainAspectRatio: false }
     });
 }
