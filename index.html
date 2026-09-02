@@ -3,37 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xylem
-    </title>
+    <title>Xylem</title>
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <!-- AUTHENTICATION SCREEN -->
-    <div id="login-screen">
-        <div class="brand-header">
-            <h1 id="txt-brand-title">XYLEM</h1>
-            <p id="txt-brand-sub">Enterprise Telemetry & Plant Analytics</p>
-        </div>
-        <form id="loginForm">
-            <div class="input-group">
-                <label id="lbl-username">Email Address</label>
-                <input type="email" id="loginEmail" required placeholder="name@company.com">
-            </div>
-            <div class="input-group">
-                <label id="lbl-password">Password</label>
-                <input type="password" id="loginPassword" required placeholder="••••••••">
-            </div>
-            <button type="submit" class="btn btn-primary" id="loginBtn">Sign In</button>
-        </form>
-        <div class="divider"><span>OR</span></div>
-        <button class="btn btn-google" id="btnGoogleLogin">Continue with Google</button>
-    </div>
-
     <!-- MAIN APPLICATION SHELL -->
-    <div id="app-container" style="display: none;">
+    <div id="app-container" style="display: flex;">
         <aside>
             <div class="aside-top">
                 <div class="logo-area">
