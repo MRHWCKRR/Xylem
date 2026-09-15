@@ -1,0 +1,1 @@
+document.addEventListener('DOMContentLoaded',()=>{const s=document.createElement('script');s.src='js/gemini.js';document.body.appendChild(s);});
