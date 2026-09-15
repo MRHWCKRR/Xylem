@@ -7,6 +7,7 @@
   <title>Xylem — Smart Farm</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="mobile.css">
+  <link rel="stylesheet" href="live.css">
 </head>
 <body>
   <div id="app-container">
@@ -26,7 +27,6 @@
         <button id="btnSignout" class="sign-out">Sign out</button>
       </div>
     </aside>
-
     <main id="mainViewContainer">
       <section id="page-dashboard" class="view-page active-page"></section>
       <section id="page-plants" class="view-page"></section>
@@ -34,13 +34,7 @@
       <section id="page-settings" class="view-page"></section>
     </main>
   </div>
-
-  <div class="modal-overlay" id="plantModal">
-    <div class="modal-content">
-      <button class="close-modal" id="btnCloseModal">×</button>
-      <div id="plantModalBody"></div>
-    </div>
-  </div>
+  <div class="modal-overlay" id="plantModal"><div class="modal-content"><button class="close-modal" id="btnCloseModal">×</button><div id="plantModalBody"></div></div></div>
   <div class="toast-container" id="toastContainer"></div>
   <script type="module" src="js/main.js"></script>
 </body>
