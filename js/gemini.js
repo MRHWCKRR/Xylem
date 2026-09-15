@@ -1,6 +1,6 @@
 // Demo-only Gemini configuration. Replace this value with your Gemini API key.
 // WARNING: A client-side API key is visible to anyone who can inspect this demo.
-const GEMINI_API_KEY='PASTE_YOUR_GEMINI_API_KEY_HERE';
+const GEMINI_API_KEY=window.XYLEM_GEMINI_API_KEY || '';
 const GEMINI_MODEL='gemini-3.8-flash';
 const GEMINI_ENDPOINT='https://generativelanguage.googleapis.com/v1beta/models/'+GEMINI_MODEL+':generateContent';
 
