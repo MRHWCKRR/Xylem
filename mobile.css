@@ -1,0 +1,93 @@
+/* Xylem mobile experience */
+@media (max-width: 760px){
+  html{font-size:16px;-webkit-text-size-adjust:100%}
+  body{padding-bottom:78px;overflow-x:hidden}
+  main{margin-left:0;padding:18px 14px 28px;width:100%}
+  .sidebar{position:fixed;left:0;right:0;top:auto;bottom:0;width:100%;height:72px;padding:7px 8px;z-index:30;background:#102319;border-top:1px solid rgba(255,255,255,.08);box-shadow:0 -8px 24px rgba(0,0,0,.12)}
+  .sidebar>div:first-child{width:100%}
+  .brand,.farm-switch,.sidebar-bottom{display:none}
+  .nav-menu{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;width:100%}
+  .nav-item{height:58px;padding:6px 2px;justify-content:center;align-items:center;flex-direction:column;gap:3px;border-radius:12px;font-size:10px;font-weight:700;color:#91a399;line-height:1.1}
+  .nav-item span{width:auto;font-size:19px;line-height:1}
+  .nav-item:hover,.nav-item.active{background:#e4f0e5;color:#173b27}
+  .topbar{display:block;margin-bottom:18px}
+  .topbar h1{font-size:25px;line-height:1.15;letter-spacing:-.6px}
+  .topbar p{font-size:12px;line-height:1.45;max-width:95%}
+  .eyebrow{font-size:9px;letter-spacing:1.2px}
+  .date-chip{display:inline-block;margin-top:12px;padding:8px 10px;font-size:10px}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:10px}
+  .stat{padding:13px;border-radius:14px;min-width:0}
+  .stat-head{font-size:9px;letter-spacing:.5px;gap:5px;align-items:center}
+  .stat-icon{width:24px;height:24px;font-size:12px;flex:0 0 auto}
+  .stat-value{font-size:23px;margin:10px 0 2px}
+  .stat-foot{font-size:9px;line-height:1.25}
+  .main-grid,.bottom-grid,.analytics-grid,.plant-grid{grid-template-columns:1fr;gap:10px}
+  .card{border-radius:15px}
+  .section{padding:15px}
+  .section-head{margin-bottom:12px;gap:8px}
+  .section-head h2{font-size:14px}
+  .section-head span{font-size:9px;text-align:right}
+  .alert{padding:12px;gap:9px;align-items:center}
+  .alert-icon{width:29px;height:29px;flex:0 0 auto}
+  .alert h3{font-size:12px}
+  .alert p{font-size:10px;line-height:1.4}
+  .alert .btn{margin-top:7px;white-space:nowrap;width:100%}
+  .plant-row{grid-template-columns:minmax(0,1fr) auto;gap:9px;padding:12px}
+  .plant-row>div:nth-child(2){grid-column:1/2;grid-row:2}
+  .plant-row>div:nth-child(3){grid-column:2;grid-row:2;text-align:right}
+  .plant-row>div:nth-child(4){grid-column:2;grid-row:1}
+  .plant-row .meter{display:block;width:100%;max-width:130px}
+  .plant-name{font-size:11px}
+  .plant-zone{font-size:9px}
+  .weather-day{padding:9px 0}
+  .weather-icon{font-size:18px}
+  .weather-day strong{font-size:11px}
+  .weather-day small{font-size:9px}
+  .temp{font-size:11px}
+  .ai-card{padding:15px;border-radius:15px}
+  .ai-card h2{font-size:15px;margin:7px 0 5px;max-width:86%}
+  .ai-card p{font-size:10px;line-height:1.5;max-width:90%}
+  .ai-card:after{font-size:34px;right:12px}
+  .chart{height:145px}
+  .chart-labels{font-size:8px}
+  .checklist{gap:2px}
+  .task{min-height:48px;padding:9px 0;font-size:11px;cursor:pointer}
+  .check{width:24px;height:24px;flex:0 0 auto}
+  .task small{font-size:8px}
+  .plant-card{padding:15px}
+  .big-value{font-size:31px;margin:10px 0}
+  .plant-metrics{gap:5px;margin:11px 0}
+  .mini{padding:8px}
+  .mini small{font-size:7px}
+  .mini strong{font-size:11px}
+  .profile-note{font-size:10px;padding:10px;margin-bottom:10px}
+  .plant-card .btn{width:100%;min-height:42px}
+  .analytics-wide{grid-column:auto}
+  .setting{min-height:62px;padding:13px 0;gap:12px}
+  .setting h3{font-size:12px}
+  .setting p{font-size:9px;line-height:1.35;max-width:250px}
+  .toggle{width:44px;height:26px;flex:0 0 auto;cursor:pointer}
+  .toggle i{width:20px;height:20px}
+  .toggle.on i{transform:translateX(18px)}
+  .btn{min-height:42px;padding:10px 13px}
+  .modal-overlay{padding:14px;align-items:flex-end}
+  .modal-content{width:100%;max-height:88vh;overflow:auto;border-radius:20px 20px 12px 12px;padding:21px 17px calc(20px + env(safe-area-inset-bottom))}
+  .modal-content h2{font-size:20px}
+  .modal-stats{gap:6px;margin:15px 0}
+  .modal-stat{padding:11px}
+  .modal-stat small{font-size:7px}
+  .modal-stat strong{font-size:18px}
+  .close-modal{width:36px;height:36px;right:12px;top:10px}
+  .toast-container{left:12px;right:12px;bottom:84px}
+  .toast{font-size:10px;text-align:center}
+}
+@media (max-width:380px){
+  main{padding-left:10px;padding-right:10px}
+  .stats{gap:7px}
+  .stat{padding:11px}
+  .stat-value{font-size:21px}
+  .section{padding:13px}
+  .topbar h1{font-size:23px}
+  .nav-item{font-size:9px}
+}
+@media (min-width:761px){.mobile-only{display:none!important}}
