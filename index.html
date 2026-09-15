@@ -1,123 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xylem</title>
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0f2418">
+  <title>Xylem — Smart Farm</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div id="app-container">
+    <aside class="sidebar">
+      <div>
+        <div class="brand"><span class="brand-mark">✳</span><div><strong>XYLEM</strong><small>SMART FARM OS</small></div></div>
+        <div class="farm-switch"><span class="live-dot"></span><div><small>ACTIVE FARM</small><strong>Aisha's Garden</strong></div><span>⌄</span></div>
+        <nav class="nav-menu">
+          <button class="nav-item active" data-view="dashboard"><span>⌂</span> Overview</button>
+          <button class="nav-item" data-view="plants"><span>♧</span> My Plants</button>
+          <button class="nav-item" data-view="analytics"><span>⌁</span> Sensor Data</button>
+          <button class="nav-item" data-view="settings"><span>⚙</span> Settings</button>
+        </nav>
+      </div>
+      <div class="sidebar-bottom">
+        <div class="connection"><span class="live-dot"></span><div><strong>Systems online</strong><small>3 micro:bit nodes connected</small></div></div>
+        <button id="btnSignout" class="sign-out">Sign out</button>
+      </div>
+    </aside>
 
-    <!-- MAIN APPLICATION SHELL -->
-    <div id="app-container" style="display: flex;">
-        <aside>
-            <div class="aside-top">
-                <div class="logo-area">
-                    XYLEM
-                    <span>MONITOR SYSTEM v3.5</span>
-                </div>
-                <ul class="nav-menu">
-                    <li id="nav-dash" class="nav-item active" data-view="dashboard">Overview</li>
-                    <li id="nav-plants" class="nav-item" data-view="plants">Plant Grid</li>
-                    <li id="nav-analytics" class="nav-item" data-view="analytics">Analytics</li>
-                    <li id="nav-settings" class="nav-item" data-view="settings">Settings</li>
-                </ul>
+    <main id="mainViewContainer">
+      <section id="page-dashboard" class="view-page active-page"></section>
+      <section id="page-plants" class="view-page"></section>
+      <section id="page-analytics" class="view-page"></section>
+      <section id="page-settings" class="view-page"></section>
+    </main>
+  </div>
 
-                <!-- NOTIFICATIONS PANEL -->
-                <div class="alert-bell-wrap">
-                    <div class="alert-bell" id="alertBellToggle">
-                        <span>System Alerts</span>
-                        <span id="alertBellBadge" class="alert-badge">0</span>
-                    </div>
-                    <div id="alertsPanel" class="alerts-panel">
-                        <div class="alerts-panel-header">
-                            <span class="alerts-panel-title">Active Notifications</span>
-                            <button id="btnMarkAllRead" class="btn-text-action">Mark all read</button>
-                        </div>
-                        <div id="alertsList"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="nav-item sign-out" id="btnSignout">Sign Out</div>
-        </aside>
-
-        <main id="mainViewContainer">
-            <section id="page-dashboard" class="view-page active-page"></section>
-            <section id="page-plants" class="view-page"></section>
-            <section id="page-analytics" class="view-page"></section>
-            <section id="page-settings" class="view-page"></section>
-        </main>
+  <div class="modal-overlay" id="plantModal">
+    <div class="modal-content">
+      <button class="close-modal" id="btnCloseModal">×</button>
+      <div id="plantModalBody"></div>
     </div>
-
-    <!-- EDIT / DETAILS MODAL -->
-    <div class="modal-overlay" id="plantModal">
-        <div class="modal-content">
-            <span class="close-modal" id="btnCloseModal">&times;</span>
-            
-            <div class="modal-header-edit">
-                <label class="input-label-sm">Plant Name</label>
-                <input type="text" id="modalPlantNameInput" class="modal-name-input" placeholder="Enter plant name...">
-            </div>
-            
-            <div class="modal-grid-meta">
-                <div class="meta-box"><label>Status</label><span id="modalHealth">--</span></div>
-                <div class="meta-box"><label>Cluster Position</label><span id="modalCluster">--</span></div>
-                <div class="meta-box"><label>30-Day Avg Moisture</label><span id="modalAvgMoisture">--</span></div>
-                <div class="meta-box"><label>30-Day Avg Temp</label><span id="modalAvgTemp">--</span></div>
-            </div>
-
-            <div class="view-toggle-bar">
-                <button class="toggle-btn active" id="btnSimpleView">Simple View</button>
-                <button class="toggle-btn" id="btnAdvancedView">Advanced View</button>
-            </div>
-
-            <h4 id="graphTitle">Telemetry Feed</h4>
-            <div class="chart-wrapper">
-                <canvas id="modalTelemetryChart"></canvas>
-            </div>
-
-            <div class="ai-summary-box modal-ai-box">
-                <div class="ai-title">Gemini AI Intelligence Analysis</div>
-                <p id="modalAiDeepAnalysis">Processing telemetry datasets...</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- CREATE NEW PLANT MODAL -->
-    <div class="modal-overlay" id="addPlantModal">
-        <div class="modal-content modal-content-sm">
-            <span class="close-modal" id="btnCloseAddModal">&times;</span>
-            <h2>Add Telemetry Node</h2>
-            <p class="modal-sub">Register a new plant sensor zone to the system grid.</p>
-            
-            <form id="addPlantForm">
-                <div class="input-group">
-                    <label>Plant Name</label>
-                    <input type="text" id="newPlantName" required placeholder="e.g. Snake Plant">
-                </div>
-                <div class="input-group">
-                    <label>Zone / Location</label>
-                    <input type="text" id="newPlantZone" required placeholder="e.g. Zone C - Row 1">
-                </div>
-                <button type="submit" class="btn btn-primary">Add Node</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- LOGOUT DIALOG -->
-    <dialog id="signoutDialog">
-        <h3 id="txt-dialog-title">Confirm Sign Out</h3>
-        <p id="txt-dialog-sub">Are you sure you want to end your active monitoring session?</p>
-        <div class="dialog-buttons">
-            <button class="dialog-btn btn-cancel" id="btnDialogCancel">Cancel</button>
-            <button class="dialog-btn btn-confirm" id="btnDialogConfirm">Sign Out</button>
-        </div>
-    </dialog>
-
-    <div class="toast-container" id="toastContainer"></div>
-
-    <script type="module" src="js/main.js"></script>
+  </div>
+  <div class="toast-container" id="toastContainer"></div>
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>
